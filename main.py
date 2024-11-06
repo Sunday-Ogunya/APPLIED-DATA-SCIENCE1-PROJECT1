@@ -7,44 +7,26 @@ import matplotlib.pyplot as plot
 dataframe = pd.read_csv("jamb_exam_results.csv")
 
 
-def plot_histogram(dataframe):
-
-    score_df = dataframe["JAMB_Score"]
-    score_mean = score_df.mean()
-    score_median = score_df.median()
-    score_mode = score_df.mode()[0]
-    score_std = score_df.std()
-    score_skewness = skew(score_df)
-    score_kurtosis = kurtosis(score_df)
-
-    plot.figure(figsize=(10, 6))
-    plot.hist(dataframe["JAMB_Score"], bins=20, color="skyblue", edgecolor="black")
-    plot.title("JAMB SCORE HISTOGRAM CHART")
-    plot.xlabel("Score")
-    plot.ylabel("Frequency")
-
-    stats_info = (
-        f"Mean: {score_mean:.2f}\n"
-        f"Median: {score_median}\n"
-        f"Mode: {score_mode}\n"
-        f"Std Dev: {score_std:.2f}\n"
-        f"Skewness: {score_skewness:.2f}\n"
-        f"Kurtosis: {score_kurtosis:.2f}"
+def plot_pie_chart(dataframe):
+    bins = [0, 100, 150, 200, 250, 300, 400]
+    labels = ["0-100", "101-150", "151-200", "201-250", "251-300", "301-400"]
+    dataframe["Score Range"] = pd.cut(dataframe["JAMB_Score"], bins=bins, labels=labels)
+    score_counts = dataframe["Score Range"].value_counts().sort_index()
+    plot.figure(figsize=(6, 6))
+    plot.pie(
+        score_counts,
+        labels=score_counts.index,
+        autopct="%1.1f%%",
+        startangle=180,
+        colors=plot.cm.Paired.colors,
     )
-    plot.gca().text(
-        1.05,
-        0.95,
-        stats_info,
-        transform=plot.gca().transAxes,
-        fontsize=10,
-        verticalalignment="top",
-        horizontalalignment="left",
-        bbox=dict(facecolor="white", alpha=0.5),
-    )
+    plot.title("DISTRIBUTION OF JAMB SCORES")
 
-    plot.tight_layout(pad=3)
-    plot.savefig("plots/histogram.png")
+    plot.savefig("plots/pie_chart.png", bbox_inches="tight")
     plot.close()
+
+
+plot_pie_chart(dataframe)
 
 
 def plot_scatter(dataframe):
@@ -100,6 +82,6 @@ def plot_boxplot(dataframe):
     plot.close()
 
 
-plot_histogram(dataframe)
+plot_pie_chart(dataframe)
 plot_scatter(dataframe)
 plot_boxplot(dataframe)
